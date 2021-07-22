@@ -11,6 +11,6 @@
 Дизайн кнопок квестов дня:
 ![image](https://user-images.githubusercontent.com/44062411/123523546-dfb84500-d6cc-11eb-8fc8-2ea99f289170.png)
 
-![pdf](https://drive.google.com/drive/folders/0B79Wj09HxeiIfjNpMFN6Qk13Zm5qalhaNjdCSGx2aFJjTlN3UEJuMkJUZTdBQ1J3bkRnT2c?resourcekey=0-5KyUmC-vnTwXZYsreJUqrQ)
+https://drive.google.com/drive/folders/0B79Wj09HxeiIfjNpMFN6Qk13Zm5qalhaNjdCSGx2aFJjTlN3UEJuMkJUZTdBQ1J3bkRnT2c?resourcekey=0-5KyUmC-vnTwXZYsreJUqrQ
 - у каждого квеста свой id
 - панель кнопок состоит из дисплея(картинки) и самих кнопок
