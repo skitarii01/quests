@@ -234,7 +234,8 @@ class Data(object):
 
     def get_photo_stat(self, color_id):
         data = self.get_stat_info()
-
+        if len(data) == 0:
+            return -1
         procents = []
         days = []
         for day in data:
