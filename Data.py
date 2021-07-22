@@ -236,11 +236,14 @@ class Data(object):
         data = self.get_stat_info()
 
         procents = []
+        days = []
         for day in data:
             if int(day[0][5:7]) == int(datetime.date.today().month) and int(day[0][0:4]) == int(
                     datetime.date.today().year):
                 procents.append(float(day[1]))
-        days = [i + 1 for i in range(len(procents))]
+                days.append(day[0])
+        first = int(days[0][8:])
+        days = [first+i for i in range(len(procents))]
 
         fig, ax = plt.subplots()
         ax.set_xlabel(data[-1][0])
