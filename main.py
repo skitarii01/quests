@@ -1,4 +1,5 @@
 import datetime
+import time
 from threading import Thread
 
 import telebot
@@ -37,18 +38,24 @@ def text_handler(msg):
         bot.send_message(user_id, text='.',
                          reply_markup=Data.Data(user_id).get_markup(ROOT_ID, 1))
     elif msg.text == 'статистика':
-        Data.Data(user_id).get_photo_stat(1)
+        ans = Data.Data(user_id).get_photo_stat(1)
+        if ans == -1:
+            bot.send_message(user_id, text='у вас нет законченных рабочих дней',
+                             reply_markup=keyboards.main_kb)
+            return
         bot.send_photo(user_id, photo=open('stat.png', 'rb'),
                        reply_markup=Data.Data(user_id).get_statistic_kb())
 
 
 def changing_pars(msg, msg2, leaf_id, mod, par):
-    print(msg.text, msg2.text)
     dat = Data.Data(msg.from_user.id)
-    dat.change_parameter(leaf_id, par, msg.text)
-    bot.edit_message_text(chat_id=msg2.chat.id, message_id=msg2.message_id,
-                          text='.',
-                          reply_markup=dat.get_markup(leaf_id, mod))
+    try:
+        dat.change_parameter(leaf_id, par, msg.text)
+        bot.edit_message_text(chat_id=msg2.chat.id, message_id=msg2.message_id,
+                              text='.',
+                              reply_markup=dat.get_markup(leaf_id, mod))
+    except Exception:
+        pass
 
 
 @bot.callback_query_handler(func=lambda c: True)
@@ -174,13 +181,14 @@ def inline(c):
 
 
 def check():
-    for user_id in Data.get_users_ids():
-        dat = Data.Data(user_id)
-        if dat.get_leaf(ROOT_ID)[STATUS] == 3:
-            if dat.get_stat_info()[-1][0] != str(datetime.date.today()):
-                dat.change_work_status()
-                bot.send_message(user_id, text='день окончен, ' + dat.summary(), reply_markup=keyboards.main_kb)
-
+    while True:
+        for user_id in Data.get_users_ids():
+            dat = Data.Data(user_id)
+            if dat.get_leaf(ROOT_ID)[STATUS] == 3:
+                if dat.get_stat_info()[-1][0] != str(datetime.date.today()):
+                    dat.change_work_status()
+                    bot.send_message(user_id, text='день окончен, ' + dat.summary(), reply_markup=keyboards.main_kb)
+        time.sleep(2)
 
 # нужно для контролирования состояния текущего дня
 # если пользователель не окончил выполнение заданий на день i, а наступил уже другой день
