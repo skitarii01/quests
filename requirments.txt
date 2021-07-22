@@ -1,2 +1,3 @@
 PyTelegramBotAPI
 sqlite3
+matplotlib
