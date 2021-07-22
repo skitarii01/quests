@@ -1,3 +1,6 @@
+import datetime
+from threading import Thread
+
 import telebot
 
 import Data
@@ -40,6 +43,7 @@ def text_handler(msg):
 
 
 def changing_pars(msg, msg2, leaf_id, mod, par):
+    print(msg.text, msg2.text)
     dat = Data.Data(msg.from_user.id)
     dat.change_parameter(leaf_id, par, msg.text)
     bot.edit_message_text(chat_id=msg2.chat.id, message_id=msg2.message_id,
@@ -145,6 +149,7 @@ def inline(c):
                               text='.',
                               reply_markup=dat.get_markup(leaf_id, mod))
     elif operation == 'preprioritet' and leaf_id != ROOT_ID:
+        # изменение приоритета
         bot.edit_message_text(chat_id=c.message.chat.id, message_id=c.message.message_id,
                               text='меняйте приоритет',
                               reply_markup=dat.get_choice_markup(leaf_id, 2, mod))
@@ -153,17 +158,33 @@ def inline(c):
         bot.edit_message_text(chat_id=c.message.chat.id, message_id=c.message.message_id,
                               text='.',
                               reply_markup=dat.get_markup(leaf_id, mod))
-    elif operation == 'descr':
+    elif operation == 'descr' and leaf_id != ROOT_ID:
+        # изменение описания
         bot.edit_message_text(chat_id=c.message.chat.id, message_id=c.message.message_id,
                               text=dat.get_leaf(leaf_id)[DESCRIPTION],
                               reply_markup=dat.get_choice_markup(leaf_id, -1, mod))
 
         bot.register_next_step_handler(c.message, changing_pars, c.message, leaf_id, mod, DESCRIPTION)
     elif operation == 'this_month':
+        # запрос на статистику этого месяца
         dat.get_photo_stat(leaf_id)
         bot.edit_message_media(chat_id=c.message.chat.id, message_id=c.message.message_id,
                                media=telebot.types.InputMediaPhoto(open('stat.png', 'rb')),
                                reply_markup=dat.get_statistic_kb(leaf_id))
 
 
+def check():
+    for user_id in Data.get_users_ids():
+        dat = Data.Data(user_id)
+        if dat.get_leaf(ROOT_ID)[STATUS] == 3:
+            if dat.get_stat_info()[-1][0] != str(datetime.date.today()):
+                dat.change_work_status()
+                bot.send_message(user_id, text='день окончен, ' + dat.summary(), reply_markup=keyboards.main_kb)
+
+
+# нужно для контролирования состояния текущего дня
+# если пользователель не окончил выполнение заданий на день i, а наступил уже другой день
+# то система автоматически заканчивает день и даёт пользователю об знать
+th = Thread(target=check)
+th.start()
 bot.polling()
