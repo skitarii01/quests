@@ -15,3 +15,6 @@
 5. loger.py - файл для изменения формата записываемых логов
 6. main.py - код взаимодействия пользователя и бота
 7. users_ids.db - база с id'шниками зарегистрированных пользователей
+
+## макет проекта в виде файла pdf
+https://drive.google.com/file/d/1ATky59aR1nO5XYZQdrUwCvF2OYi1nzYF/view?usp=sharing
