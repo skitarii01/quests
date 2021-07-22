@@ -179,7 +179,7 @@ class Data(object):
         conn.commit()
         if par_id == DIFFICULTY:
             self.update_parents(leaf_id)
-        log.info("user %s changed quest(%s) %s from %s to %s" % (
+        log.info("user %s changed quest(%s) %s from '%s' to '%s'" % (
             self.user_id, leaf_id, self.parameters[par_id], old_data, new_data))
 
     def is_leaf(self, leaf_id):
@@ -300,6 +300,8 @@ class Data(object):
                 if quest[PARENT_ID] == leaf_id:
                     dif = quest[DIFFICULTY]
                     if len(work_quests[dif - 1]) < 5 - ((dif - 1) * 2) and quest[STATUS] == 1:
+                        childs.append(quest)
+                    elif len(work_quests[dif - 1]) >= 5 - ((dif - 1) * 2) and (self.is_leaf(quest[ID])==0):
                         childs.append(quest)
         else:
             # если имеем дело с клавой вида 1, просто добавляем всех детей
