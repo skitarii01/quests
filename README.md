@@ -19,7 +19,8 @@
 
 ## изначальный макет проекта в виде файла pdf
 В процессе разработки некоторые вещи пришлось убрать, так что макет не совсем актуален
-https://drive.google.com/file/d/1ATky59aR1nO5XYZQdrUwCvF2OYi1nzYF/view?usp=sharing
+[макет.pdf](https://github.com/skitarii01/quests/files/6862463/default.pdf)
+
 
 ## как осуществляется взаимодействие c интерфейсом
 ![image](https://user-images.githubusercontent.com/44062411/126644569-37eb15ec-3e79-4408-bf19-6d4cc6102471.png)
@@ -31,4 +32,6 @@ https://drive.google.com/file/d/1ATky59aR1nO5XYZQdrUwCvF2OYi1nzYF/view?usp=shari
 6. добавить квест - добавляет пустой квест
 7. удалить - удаление родительского квеста со всеми потомками
 8. new_quest - квест-потомок на текущем уровне, при нажатии происходит переход на уровень ниже
+
+## описание режима активных квестов
 
