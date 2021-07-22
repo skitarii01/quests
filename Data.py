@@ -205,6 +205,13 @@ class Data(object):
                 s += self.get_difficulty(quest[ID])
         return s
 
+    def get_stat_info(self):
+        conn = sql.connect('summaries/%s.db' % self.user_id)
+        cur = conn.cursor()
+        data = cur.execute("SELECT * FROM summaries;").fetchall()
+        conn.commit()
+        return data
+
     def get_data(self):
         # получаем список всех квестов(в виде кортежей параметров)
         conn = sql.connect('trees/%s.db' % self.user_id)
@@ -226,10 +233,7 @@ class Data(object):
         return 'Эффективность сегодня: ' + result
 
     def get_photo_stat(self, color_id):
-        conn = sql.connect('summaries/%s.db' % self.user_id)
-        cur = conn.cursor()
-        data = cur.execute("SELECT * FROM summaries;").fetchall()
-        conn.commit()
+        data = self.get_stat_info()
 
         procents = []
         for day in data:
@@ -239,6 +243,9 @@ class Data(object):
         days = [i + 1 for i in range(len(procents))]
 
         fig, ax = plt.subplots()
+        ax.set_xlabel(data[-1][0])
+        ax.set_ylabel('Эффективность( % )')
+
         ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
         ax.xaxis.set_minor_locator(ticker.MultipleLocator(1))
         if color_id == 1:
@@ -303,7 +310,9 @@ class Data(object):
             prefix = 'c_'
 
         quest_kb.add(types.InlineKeyboardButton(text='...', callback_data=prefix + 'back_to_parent.' + str(leaf_id)), )
-        quest_kb.add(types.InlineKeyboardButton(text='удалить', callback_data=prefix + 'delete.' + str(leaf_id)))
+        quest_kb.add(
+            types.InlineKeyboardButton(text=parent_parameters[NAME], callback_data=prefix + 'parent.' + str(leaf_id)))
+
         quest_kb.add(types.InlineKeyboardButton(text=self.difs[parent_parameters[DIFFICULTY] - 1],
                                                 callback_data=prefix + 'predifficulty.' + str(leaf_id)),
                      types.InlineKeyboardButton(text=self.prs[parent_parameters[PRIORITET] - 1],
@@ -311,9 +320,7 @@ class Data(object):
         quest_kb.add(types.InlineKeyboardButton(text='описание', callback_data=prefix + 'descr.' + str(leaf_id)),
                      types.InlineKeyboardButton(text='добавить квест',
                                                 callback_data=prefix + 'add_new_quest.' + str(leaf_id)))
-        quest_kb.add(
-            types.InlineKeyboardButton(text=parent_parameters[NAME], callback_data=prefix + 'parent.' + str(leaf_id)))
-
+        quest_kb.add(types.InlineKeyboardButton(text='удалить', callback_data=prefix + 'delete.' + str(leaf_id)))
         counter = 0
         while counter < len(childs):
             arr = []
