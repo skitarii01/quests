@@ -9,12 +9,12 @@ from loger import log
 
 '''
     АЛГОРИТМ ВЫЧИСЛЕНИЯ СЛОЖНОСТИ НОДОВ (СЛОЖНОСТЬ ЛИСТОВ РЕГУЛИРУЕТ ЮЗЕР)
-    
+
      1) складываем сумму сложностей всех листов для каждого нода текущего уровня в массив difficulties
      2) считаем общую сумму нодов в переменную S
      3) теперь границы для сложностей это S/3 и 2S/3
      4) рекурсивно выполняем на более высокие уровни, пока не дойдем до root'а
-     
+
      оптимизация для дерева квестов?(подсуммы нодов)
      удаление нодов? нужно ли?(пока нет)
      процент выполнения?
@@ -258,17 +258,20 @@ class Data(object):
         first = int(days[0][8:])
         days = [first + i for i in range(len(procents))]
 
-        fig, ax = plt.subplots()
-        ax.set_xlabel(data[-1][0])
-        ax.set_ylabel('Эффективность( % )')
+        figure, axis = plt.subplots(2)
+        axis[0].set_xlabel('дни')
+        axis[0].set_ylabel('эффективность(%)')
+        axis[0].xaxis.set_major_locator(ticker.MultipleLocator(1))
+        axis[0].xaxis.set_minor_locator(ticker.MultipleLocator(1))
+        axis[1].xaxis.set_major_locator(ticker.MultipleLocator(1))
+        axis[1].xaxis.set_minor_locator(ticker.MultipleLocator(1))
 
-        ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
-        ax.xaxis.set_minor_locator(ticker.MultipleLocator(1))
         if color_id == 1:
             color = 'r'
         else:
             color = 'b'
-        plt.plot(days, procents, color=color)
+        axis[0].plot(days, procents, color=color)
+        axis[1].bar(days, procents, color=color)
         plt.savefig('stat.png')
 
     def get_work_quests(self):
