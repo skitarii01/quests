@@ -143,7 +143,7 @@ def inline(c):
     elif operation == 'current':
         # подтверждение выполнения квеста
         bot.edit_message_text(chat_id=c.message.chat.id, message_id=c.message.message_id,
-                              text='квест выполнен? Y/N',
+                              text='Описание: ' + dat.get_leaf(leaf_id)[DESCRIPTION] + '\n\n'+'подтвердите завершение квеста',
                               reply_markup=dat.get_ynkb(leaf_id, 'current'))
     elif operation[1:] == 'current':
         if operation[0] == 'y':
@@ -185,7 +185,6 @@ def inline(c):
         bot.edit_message_media(chat_id=c.message.chat.id, message_id=c.message.message_id,
                                media=telebot.types.InputMediaPhoto(open('stat.png', 'rb')),
                                reply_markup=dat.get_statistic_kb(leaf_id))
-
 
 def check():
     while True:
