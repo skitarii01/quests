@@ -55,6 +55,18 @@ class Data(object):
         self.difs = ['простой', 'средний', 'сложный']
         self.prs = ['неважный', 'не очень важный', 'важный']
 
+    def exist_leaf(self, leaf_id):
+        # проверяет существования листа в базе
+        conn = sql.connect('trees/%s.db' % self.user_id)
+        cur = conn.cursor()
+        leasts = cur.execute("SELECT * FROM tree;").fetchall()
+        for i in leasts:
+            if i[ID] == leaf_id:
+                conn.commit()
+                return True
+        conn.commit()
+        return False
+
     def add_leaf(self, name, description, difficulty, status, prioritet, parent=ROOT_ID):
         # добавляет в базу tree новый лист с новым id
 
@@ -244,7 +256,7 @@ class Data(object):
                 procents.append(float(day[1]))
                 days.append(day[0])
         first = int(days[0][8:])
-        days = [first+i for i in range(len(procents))]
+        days = [first + i for i in range(len(procents))]
 
         fig, ax = plt.subplots()
         ax.set_xlabel(data[-1][0])
@@ -294,14 +306,14 @@ class Data(object):
                 for quest in dif:
                     quest_kb.add(
                         types.InlineKeyboardButton(text=quest[NAME] + ' (%s)' % (self.difs[quest[DIFFICULTY] - 1]),
-                                                   callback_data='c_parent.' + str(quest[0])))
+                                                   callback_data='c_parent.' + str(quest[ID])))
             # если сложность i заполнена, то квесты со сложностью i не показываются. Также не показываются квесты из work_quests
             for quest in self.get_data():
                 if quest[PARENT_ID] == leaf_id:
                     dif = quest[DIFFICULTY]
                     if len(work_quests[dif - 1]) < 5 - ((dif - 1) * 2) and quest[STATUS] == 1:
                         childs.append(quest)
-                    elif len(work_quests[dif - 1]) >= 5 - ((dif - 1) * 2) and (self.is_leaf(quest[ID])==0):
+                    elif len(work_quests[dif - 1]) >= 5 - ((dif - 1) * 2) and (self.is_leaf(quest[ID]) == 0):
                         childs.append(quest)
         else:
             # если имеем дело с клавой вида 1, просто добавляем всех детей
