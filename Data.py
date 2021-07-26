@@ -246,12 +246,18 @@ class Data(object):
         first = int(days[0][8:])
         days = [first+i for i in range(len(procents))]
 
-        fig, ax = plt.subplots()
-        ax.set_xlabel(data[-1][0])
-        ax.set_ylabel('Эффективность( % )')
+        fig, ax = plt.subplots(2)
+        ax[0].set_xlabel('дни')
+        ax[0].set_ylabel('Эффективность( % )')
 
-        ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
-        ax.xaxis.set_minor_locator(ticker.MultipleLocator(1))
+        ax[0].xaxis.set_major_locator(ticker.MultipleLocator(1))
+        ax[0].xaxis.set_minor_locator(ticker.MultipleLocator(1))
+
+        ax[1].set_xlabel('дни')
+        ax[1].set_ylabel('Эффективность( % )')
+
+        ax[1].xaxis.set_major_locator(ticker.MultipleLocator(1))
+        ax[1].xaxis.set_minor_locator(ticker.MultipleLocator(1))
         if color_id == 1:
             color = 'r'
         else:
