@@ -9,12 +9,12 @@ from loger import log
 
 '''
     АЛГОРИТМ ВЫЧИСЛЕНИЯ СЛОЖНОСТИ НОДОВ (СЛОЖНОСТЬ ЛИСТОВ РЕГУЛИРУЕТ ЮЗЕР)
-    
+
      1) складываем сумму сложностей всех листов для каждого нода текущего уровня в массив difficulties
      2) считаем общую сумму нодов в переменную S
      3) теперь границы для сложностей это S/3 и 2S/3
      4) рекурсивно выполняем на более высокие уровни, пока не дойдем до root'а
-     
+
      оптимизация для дерева квестов?(подсуммы нодов)
      удаление нодов? нужно ли?(пока нет)
      процент выполнения?
@@ -54,6 +54,18 @@ class Data(object):
         # словесное описание параметров difficulty и prioritet
         self.difs = ['простой', 'средний', 'сложный']
         self.prs = ['неважный', 'не очень важный', 'важный']
+
+    def exist_leaf(self, leaf_id):
+        # проверяет существования листа в базе
+        conn = sql.connect('trees/%s.db' % self.user_id)
+        cur = conn.cursor()
+        leasts = cur.execute("SELECT * FROM tree;").fetchall()
+        for i in leasts:
+            if i[ID] == leaf_id:
+                conn.commit()
+                return True
+        conn.commit()
+        return False
 
     def add_leaf(self, name, description, difficulty, status, prioritet, parent=ROOT_ID):
         # добавляет в базу tree новый лист с новым id
@@ -244,25 +256,25 @@ class Data(object):
                 procents.append(float(day[1]))
                 days.append(day[0])
         first = int(days[0][8:])
-        days = [first+i for i in range(len(procents))]
+        days = [first + i for i in range(len(procents))]
 
-        fig, ax = plt.subplots(2)
-        ax[0].set_xlabel('дни')
-        ax[0].set_ylabel('Эффективность( % )')
+        figure, axis = plt.subplots(2)
+        axis[0].set_xlabel('дни')
+        axis[0].set_ylabel('эффективность(%)')
+        axis[0].xaxis.set_major_locator(ticker.MultipleLocator(1))
+        axis[0].xaxis.set_minor_locator(ticker.MultipleLocator(1))
 
-        ax[0].xaxis.set_major_locator(ticker.MultipleLocator(1))
-        ax[0].xaxis.set_minor_locator(ticker.MultipleLocator(1))
+        axis[1].set_xlabel('дни')
+        axis[1].set_ylabel('эффективность(%)')
+        axis[1].xaxis.set_major_locator(ticker.MultipleLocator(1))
+        axis[1].xaxis.set_minor_locator(ticker.MultipleLocator(1))
 
-        ax[1].set_xlabel('дни')
-        ax[1].set_ylabel('Эффективность( % )')
-
-        ax[1].xaxis.set_major_locator(ticker.MultipleLocator(1))
-        ax[1].xaxis.set_minor_locator(ticker.MultipleLocator(1))
         if color_id == 1:
             color = 'r'
         else:
             color = 'b'
-        plt.plot(days, procents, color=color)
+        axis[0].plot(days, procents, color=color)
+        axis[1].bar(days, procents, color=color)
         plt.savefig('stat.png')
 
     def get_work_quests(self):
@@ -300,14 +312,14 @@ class Data(object):
                 for quest in dif:
                     quest_kb.add(
                         types.InlineKeyboardButton(text=quest[NAME] + ' (%s)' % (self.difs[quest[DIFFICULTY] - 1]),
-                                                   callback_data='c_parent.' + str(quest[0])))
+                                                   callback_data='c_parent.' + str(quest[ID])))
             # если сложность i заполнена, то квесты со сложностью i не показываются. Также не показываются квесты из work_quests
             for quest in self.get_data():
                 if quest[PARENT_ID] == leaf_id:
                     dif = quest[DIFFICULTY]
                     if len(work_quests[dif - 1]) < 5 - ((dif - 1) * 2) and quest[STATUS] == 1:
                         childs.append(quest)
-                    elif len(work_quests[dif - 1]) >= 5 - ((dif - 1) * 2) and (self.is_leaf(quest[ID])==0):
+                    elif len(work_quests[dif - 1]) >= 5 - ((dif - 1) * 2) and (self.is_leaf(quest[ID]) == 0):
                         childs.append(quest)
         else:
             # если имеем дело с клавой вида 1, просто добавляем всех детей

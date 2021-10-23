@@ -6,6 +6,7 @@ import telebot
 
 import Data
 import keyboards
+from loger import log
 
 TOKEN = open('TOKEN.txt').read()
 bot = telebot.TeleBot(TOKEN)
@@ -65,6 +66,12 @@ def inline(c):
     if len(leaf_id.split()) == 1:
         leaf_id = int(leaf_id)
     dat = Data.Data(c.from_user.id)
+    # проверка существования листа
+    if operation != 'this_month' and not (dat.exist_leaf(leaf_id)):
+        bot.send_message(c.message.chat.id, text='ошибка выполнения, квест может быть удалён', reply_markup=keyboards.main_kb)
+        return -1
+
+    # выбираем режим клавиатуры
     if operation.split('_')[0] == 'c':
         mod = 1
         operation = operation[2:]
@@ -136,7 +143,7 @@ def inline(c):
     elif operation == 'current':
         # подтверждение выполнения квеста
         bot.edit_message_text(chat_id=c.message.chat.id, message_id=c.message.message_id,
-                              text='квест выполнен? Y/N',
+                              text='Описание: ' + dat.get_leaf(leaf_id)[DESCRIPTION] + '\n\n'+'подтвердите завершение квеста',
                               reply_markup=dat.get_ynkb(leaf_id, 'current'))
     elif operation[1:] == 'current':
         if operation[0] == 'y':
@@ -179,20 +186,30 @@ def inline(c):
                                media=telebot.types.InputMediaPhoto(open('stat.png', 'rb')),
                                reply_markup=dat.get_statistic_kb(leaf_id))
 
-
 def check():
     while True:
-        for user_id in Data.get_users_ids():
-            dat = Data.Data(user_id)
-            if dat.get_leaf(ROOT_ID)[STATUS] == 3:
-                if dat.get_stat_info()[-1][0] != str(datetime.date.today()):
-                    dat.change_work_status()
-                    bot.send_message(user_id, text='день окончен, ' + dat.summary(), reply_markup=keyboards.main_kb)
-        time.sleep(2)
+        try:
+            for user_id in Data.get_users_ids():
+                dat = Data.Data(user_id)
+                if dat.get_leaf(ROOT_ID)[STATUS] == 3:
+                    if dat.get_stat_info()[-1][0] != str(datetime.date.today()):
+                        dat.change_work_status()
+                        bot.send_message(user_id, text='день окончен, ' + dat.summary(), reply_markup=keyboards.main_kb)
+            time.sleep(2)
+        except Exception:
+            time.sleep(2)
 
 # нужно для контролирования состояния текущего дня
 # если пользователель не окончил выполнение заданий на день i, а наступил уже другой день
 # то система автоматически заканчивает день и даёт пользователю об знать
 th = Thread(target=check)
-th.start()
-bot.polling()
+
+while True:
+    try:
+        log.info('connect')
+        print('connecting')
+        bot.polling()
+    except Exception:
+        log.info('smthg is wrong, reconnecting')
+        print('smthg is wrong, reconnecting')
+        time.sleep(2)
